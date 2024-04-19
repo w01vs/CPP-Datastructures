@@ -613,7 +613,7 @@ public:
 
 	~List()
 	{
-		for(size_t i = 0; i < count; i++)
+		for(size_t i = 0; i < elements; i++)
 		{
 			delete ptr[i];
 		}

@@ -6,9 +6,12 @@ I find datastructures interesting, and wanted to learn about the ins and outs of
 ## General info
 None of the datastructures will work with raw pointers. They will accept `std::unqiue_ptr` or `std::shared_ptr`. I do intend to make all my datastructures compatible compatible with objects or structs that manage their own memory dynamically using pointers. All arithmetic types (following `std::is_arithmetic<T>`) will be contiguous in memory if possible with the datastructure. Other types will not be contiguous in memory.
 
+
+## Datastructures I have written some tests for.
+* List (Dynamic Array)
+  
 ## Datastructures I am 99% sure actually work fully
 * Linked List
-* List (Dynamic Array)
 * Stack
 
 ## Datastructures Implemented (may contain bugs)

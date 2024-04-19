@@ -59,8 +59,6 @@ int main()
 	assert(list[0][0] == 10);
 	assert(list.At(0).At(0) == 10);
 	list.Resize(2, true);
-	cout << list.Size() << endl;
-	cout << list << endl;
 	list[0][0] = 1;
 
 	assert(list.Size() == 2);

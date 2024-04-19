@@ -12,6 +12,7 @@ int main()
     using namespace std;
     const List l1 { 1, 2, 3 };
     List<int> l { 1,2,3 };
+    cout << "Hello" << endl;
 
     bool t = true;
     while(t)

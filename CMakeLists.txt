@@ -13,12 +13,12 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project ("CMake-CPP-Things" VERSION 1.0)
+project ("CPP-Datastructures" VERSION 1.0)
 
 configure_file(CPP-Things.h.in CPP-Things.h)
 
 # Add source to this project's executable.
-add_executable (CMake-CPP-Things  "tests/List/ltest2.cpp")
+add_executable (CMake-CPP-Things  "main/main.cpp")
 target_include_directories(CMake-CPP-Things PUBLIC
 						   "${PROJECT_BINARY_DIR}"
 						   )

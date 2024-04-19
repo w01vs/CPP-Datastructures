@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <string>
 #include "TypeTraitsCheck.h"
+#include <memory>
 
 // Percentage of the internal array that is populated
 enum

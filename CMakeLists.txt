@@ -28,6 +28,9 @@ add_executable(ltest2 "tests/List/ltest2.cpp")
 target_include_directories(CPP-Datastructures PUBLIC "${PROJECT_BINARY_DIR}")
 add_executable(stacktest "tests/Stack/stacktest.cpp")
 target_include_directories(CPP-Datastructures PUBLIC "${PROJECT_BINARY_DIR}")
+add_executable(sltest "tests/LinkedLists/sltest.cpp")
+target_include_directories(CPP-Datastructures PUBLIC "${PROJECT_BINARY_DIR}")
+add_executable(dltest "tests/LinkedLists/dltest.cpp")
 
 # Enable testing
 enable_testing()
@@ -36,6 +39,8 @@ enable_testing()
 add_test(NAME ltest COMMAND ltest)
 add_test(NAME ltest2 COMMAND ltest2)
 add_test(NAME stacktest COMMAND stacktest)
+add_test(NAME sltest COMMAND sltest)
+add_test(NAME dltest COMMAND dltest)
 
 
 

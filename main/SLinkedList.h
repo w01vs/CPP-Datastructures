@@ -240,7 +240,7 @@ public:
 
 	void Append(const T& data) noexcept
 	{
-		T* newNode = new Node<T>(data);
+		Node<T>* newNode = new Node<T>(data);
 		if(head == nullptr)
 		{
 			head = newNode;
@@ -256,7 +256,7 @@ public:
 
 	void Append(T&& data) noexcept
 	{
-		T* newNode = new Node<T>(std::move(data));;
+		Node<T>* newNode = new Node<T>(std::move(data));;
 		if(head == nullptr)
 		{
 			head = newNode;

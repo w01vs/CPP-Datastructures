@@ -13,33 +13,30 @@ class Stack
 	static_assert(std::is_copy_constructible_v<T>, "Attempted to make a Stack with a type that does not implement a copy constructor");
 	static_assert(!std::is_pointer_v<T>, "Attempted to make a Stack with a raw pointer type");
 public:
-	Stack() : count(0), list(new SLinkedList<T>()) {}
+	Stack() : count(0), list(SLinkedList<T>()) {}
 
 	Stack(T data[], const size_t size) : count(size)
 	{
-		list = new SLinkedList<T>(data, size);
+		list = SLinkedList<T>(data, size);
 	}
 
 	explicit Stack(std::vector<T> data) : count(data.size())
 	{
-		list = new SLinkedList<T>(data);
+		list = SLinkedList<T>(data);
 	}
 
 	template <size_t N>
 	explicit Stack(std::array<T, N> data) : count(N)
 	{
-		list = new SLinkedList<T>(data);
+		list = SLinkedList<T>(data);
 	}
 
 	Stack(std::initializer_list<T> data) : count(data.size())
 	{
-		list = new SLinkedList<T>(data);
+		list = SLinkedList<T>(data);
 	}
 
-	~Stack()
-	{
-		delete list;
-	}
+	~Stack() = default;
 
 	Stack(const Stack& other)
 	{
@@ -63,7 +60,6 @@ public:
 		count = other.count;
 		list = other.list;
 		other.list = nullptr;
-	
 	}
 
 	Stack& operator=(Stack&& other) noexcept
@@ -81,7 +77,7 @@ public:
 	template <typename U = T, std::enable_if_t<is_printable<U>::value, int> = 0>
 	friend std::ostream& operator<<(std::ostream& os, const Stack& stack)
 	{
-		os << *(stack.list);
+		os << stack.list;
 		return os;
 	}
 
@@ -89,7 +85,7 @@ public:
 	bool operator==(const Stack& other) const
 	{
 		if(this == &other) return true;
-		return *list == *(other.list);
+		return list == other.list;
 	}
 
 	T Pop()
@@ -99,7 +95,7 @@ public:
 			throw std::out_of_range("Stack is empty");
 		}
 		count--;
-		return list->PopFront();
+		return list.PopFront();
 	}
 
 	[[nodiscard]] T Peek() const
@@ -108,26 +104,24 @@ public:
 		{
 			throw std::out_of_range("Stack is empty");
 		}
-		return list->Front();
+		return list.Front();
 	}
 
 	void Push(const T& data)
 	{
 		count++;
-		list->Prepend(data);
+		list.Prepend(data);
 	}
 
 	void Push(T&& data)
 	{
 		count++;
-		list->Prepend(std::move(data));
+		list.Prepend(std::move(data));
 	}
 
 	void Clear()
 	{
 		count = 0;
-		delete list;
-		list = nullptr;
 	}
 
 	[[nodiscard]] size_t Size() const
@@ -142,7 +136,7 @@ public:
 
 private:
 	size_t count;
-	SLinkedList<T>* list;
+	SLinkedList<T> list;
 };
 
 

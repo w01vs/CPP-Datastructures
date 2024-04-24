@@ -9,13 +9,15 @@ None of the datastructures will work with raw pointers. They will accept `std::u
 
 ## Datastructures I have written some tests for.
 * List (Dynamic Array)
-  
-## Datastructures I am 99% sure actually work fully
 * Linked List
 * Stack
+* Doubly Linked List
+  
+## Datastructures I am 99% sure actually work fully
+None.
 
 ## Datastructures Implemented (may contain bugs)
-* Doubly Linked List
+* Queue
 
 ## Datastructures In Progress
 None.
@@ -23,7 +25,6 @@ None.
 ## Datastructures Planned
 I will implement these eventually, in no particular order.
 * HashMap
-* Queue
 * Priority Queue - Implementation with a Max Heap
 * Tree
 * Binary Tree's

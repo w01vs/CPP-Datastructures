@@ -15,34 +15,18 @@ class Stack
 public:
 	Stack() : count(0), list(SLinkedList<T>()) {}
 
-	Stack(T data[], const size_t size) : count(size)
-	{
-		list = SLinkedList<T>(data, size);
-	}
+	Stack(T data[], const size_t size) : count(size), list(SLinkedList<T>(data)) {}
 
-	explicit Stack(std::vector<T> data) : count(data.size())
-	{
-		list = SLinkedList<T>(data);
-	}
+	explicit Stack(std::vector<T> data) : count(data.size()), list(SLinkedList<T>(data)) {}
 
 	template <size_t N>
-	explicit Stack(std::array<T, N> data) : count(N)
-	{
-		list = SLinkedList<T>(data);
-	}
+	explicit Stack(std::array<T, N> data) : count(N), list(SLinkedList<T>(data)) {}
 
-	Stack(std::initializer_list<T> data) : count(data.size())
-	{
-		list = SLinkedList<T>(data);
-	}
+	Stack(std::initializer_list<T> data) : count(data.size()), list(SLinkedList<T>(data)) {}
 
 	~Stack() = default;
 
-	Stack(const Stack& other)
-	{
-		count = other.count;
-		list = new SLinkedList<T>(*(other.list));
-	}
+	Stack(const Stack& other) : count(other.count), list(other.list) {}
 
 	Stack& operator=(const Stack& other)
 	{
@@ -50,7 +34,7 @@ public:
 
 		Clear();
 		count = other.count;
-		list = new SLinkedList<T>(*(other.list));
+		list = other.list;
 		
 		return *this;
 	}
@@ -59,7 +43,6 @@ public:
 	{
 		count = other.count;
 		list = other.list;
-		other.list = nullptr;
 	}
 
 	Stack& operator=(Stack&& other) noexcept
@@ -69,7 +52,6 @@ public:
 		Clear();
 		count = other.count;
 		list = other.list;
-		other.list = nullptr;
 
 		return *this;
 	}
@@ -122,6 +104,7 @@ public:
 	void Clear()
 	{
 		count = 0;
+		list.Clear();
 	}
 
 	[[nodiscard]] size_t Size() const

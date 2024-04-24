@@ -122,7 +122,7 @@ public:
 		const T* p = data.begin();
 		head = new Node<T>(p[0]);
 		Node<T>* current = head;
-		for(size_t i = 0; i < count; i++)
+		for(size_t i = 1; i < count; i++)
 		{
 			current->next = new Node<T>(p[i], nullptr, current);
 			current = current->next;
@@ -283,17 +283,33 @@ public:
 	void Prepend(const T& data) noexcept
 	{
 		Node<T>* newNode = new Node<T>(data, nullptr, head);
-		head = newNode;
+		if(head == nullptr)
+		{
+			head = newNode;
+			tail = newNode;
+		}
+		{
+			head->prev = newNode;
+			newNode->next = head;
+			head = newNode;
+		}
 		count++;
-		if(count == 1) tail = head;
 	}
 
 	void Prepend(T&& data) noexcept
 	{
 		Node<T>* newNode = new Node<T>(std::move(data), nullptr, head);
-		head = newNode;
+		if(head == nullptr)
+		{
+			head = newNode;
+			tail = newNode;
+		}
+		{
+			head->prev = newNode;
+			newNode->next = head;
+			head = newNode;
+		}
 		count++;
-		if(count == 1) tail = head;
 	}
 
 	[[nodiscard]] T Front() const

@@ -34,5 +34,5 @@ I will implement these eventually, in no particular order.
   * Heap
     * Min Heap
     * Max Heap
-* Set
+* HashSet
 

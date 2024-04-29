@@ -16,6 +16,12 @@ struct is_printable : std::false_type {};
 template <typename X>
 struct is_printable<X, std::void_t<decltype(std::declval<std::ostream&>() << std::declval<X>()) >> : std::true_type {};
 
+template <typename T, typename = void>
+struct has_std_hash : std::false_type {};
+
+template <typename T>
+struct has_std_hash < T, std::void_t<decltype(std::hash<T>{}(std::declval<T>())) >> : std::true_type {};
+
 #endif // !TYPE_TRAITS_CHECK
 
 

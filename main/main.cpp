@@ -5,6 +5,7 @@
 #include "Stack.h"
 #include "DLinkedList.h"
 #include "Queue.h"
+#include "HashMap.h"
 
 
 

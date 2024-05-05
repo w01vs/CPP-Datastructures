@@ -6,7 +6,8 @@
 
 enum
 {
-	MAX_LOAD = 70
+	MAX_LOAD = 70,
+	NEW_LOAD = 30
 };
 
 template<typename T, typename U>
@@ -35,16 +36,22 @@ public:
 
 	~HashMap()
 	{
-		delete ptr_;
+		for(int i = 0; i < capacity_; i++)
+		{
+			delete ptr_[i];
+		}
+		delete[] ptr_;
 	}
 
-	HashMap(const HashMap& other) : capacity_(other.capacity_), load_factor_(other.load_factor_)
+	HashMap(const HashMap& other) : capacity_(other.capacity_), load_factor_(other.load_factor_), count_(other.count_)
 	{
 		ptr_ = new Entry* [capacity_];
 		for(int i = 0; i < capacity_; i++)
 		{
-			if(other.ptr_[i] != nullptr)	ptr_[i] = new Entry(*(other.ptr_[i]));
-			else ptr_[i] = nullptr;
+			if(other.ptr_[i] != nullptr)	
+				ptr_[i] = new Entry(*(other.ptr_[i]));
+			else 
+				ptr_[i] = nullptr;
 		}
 	}
 
@@ -55,20 +62,24 @@ public:
 		clear();
 		capacity_ = other.capacity_;
 		load_factor_ = other.load_factor_;
+		count_ = other.count_;
 		ptr_ = new Entry* [capacity_];
 		for(int i = 0; i < capacity_; i++)
 		{
-			if(other.ptr_[i] != nullptr)	ptr_[i] = new Entry(*(other.ptr_[i]));
-			else ptr_[i] = nullptr;
+			if(other.ptr_[i] != nullptr)	
+				ptr_[i] = new Entry(*(other.ptr_[i]));
+			else 
+				ptr_[i] = nullptr;
 		}
 
 		return *this;
 	}
 
-	HashMap(HashMap&& other) : capacity_(other.capacity_), load_factor_(other.load_factor_), ptr_(other.ptr_)
+	HashMap(HashMap&& other) : capacity_(other.capacity_), load_factor_(other.load_factor_), ptr_(other.ptr_), count_(other.count_)
 	{
 		other.capacity_ = 0;
 		other.load_factor_ = 0;
+		other.count_ = 0;
 		other.ptr_ = nullptr;
 	}
 
@@ -81,21 +92,28 @@ public:
 		capacity_ = other.capacity_;
 		load_factor_ = other.load_factor_;
 		ptr_ = other.ptr_;
+		count_ = other.count_;
+
+		other.capacity_ = 0;
+		other.load_factor_ = 0;
+		other.ptr_ = nullptr;
+		other.count_ = 0;
 	}
 
 	U& operator[](const T& key)
 	{
-		const size_t hash = hash(key);
-		const size_t index = hash % capacity_;
+		const size_t hash_value = hash(key);
+		const size_t index = hash_value % capacity_;
 		if(ptr_[index] == nullptr)
 		{
-			ptr_[index] = new Entry{hash, U(), key};
+			ptr_[index] = new Entry{hash_value, U(), key};
+			count_++;
 			rehash();
 			return ptr_[index]->value;
 		}
 
 		Entry* ret = ptr_[index];
-		while(ret->hash != hash)
+		while(ret->hash != hash_value)
 			ret = ret->next;
 
 		return ret->value;
@@ -103,22 +121,23 @@ public:
 
 	void insert(T key, U value)
 	{
-		const size_t hash = hash(key);
-		const size_t index = hash % capacity_;
+		const size_t hash_value = hash(key);
+		const size_t index = hash_value % capacity_;
 
 		Entry* entry = ptr_[index];
 		if(entry == nullptr)
-			ptr_[index] = new Entry(hash, value, key, nullptr);
+			ptr_[index] = new Entry(hash_value, value, key, nullptr);
 		else
-			entry->next = new Entry(hash, value, key, nullptr);
+			entry->next = new Entry(hash_value, value, key, nullptr);
 
+		count_++;
 		rehash();
 	}
 
 	void remove(const T& key)
 	{
-		const size_t hash = hash(key);
-		const size_t index = hash % capacity_;
+		const size_t hash_value = hash(key);
+		const size_t index = hash_value % capacity_;
 
 		Entry* entry = ptr_[index];
 		if(entry == nullptr)
@@ -130,6 +149,7 @@ public:
 				const Entry* temp = entry;
 				ptr_[index] = entry->next;
 				delete temp;
+				count_--;
 				return;
 			}
 			Entry* prev = entry;
@@ -142,6 +162,7 @@ public:
 			}
 
 			prev->next = entry->next;
+			count_--;
 			delete entry;
 		}
 
@@ -150,8 +171,8 @@ public:
 
 	bool contains_key(const T& key)
 	{
-		const size_t hash = hash(key);
-		const size_t index = hash % capacity_;
+		const size_t hash_value = hash(key);
+		const size_t index = hash_value % capacity_;
 
 		Entry* entry = ptr_[index];
 
@@ -190,12 +211,15 @@ public:
 		delete[] ptr_;
 		capacity_ = 0;
 		load_factor_ = 0;
+		count_ = 0;
+		ptr_ = new Entry*[1];
 	}
 
 private:
 	size_t capacity_;
 	float load_factor_;
 	Entry** ptr_;
+	size_t count_;
 
 	size_t hash(const T& key)
 	{
@@ -228,7 +252,22 @@ private:
 		load_factor_ = (double)res / capacity_;
 	}
 
-	void rehash(); // Check if resize is needed and do so.
+	void rehash()
+	{
+		calc_load_fac();
+		if(load_factor_ >= (float)MAX_LOAD / 100)
+		{
+			// new capacity -> calculated taking average amount of entries per index.
+			// even though load factor is calculated taking the average amount of entries every entry has in its index.
+			size_t new_capacity = count_ / ((float)NEW_LOAD / 100) * 100;
+			Entry** temp = new Entry * [capacity_];
+			for(int i = 0; i < capacity_; i++)
+				temp[i] = ptr_[i];
+
+			delete[] ptr_;
+		}
+		calc_load_fac();
+	}
 };
 
 #endif // HASHSET_H

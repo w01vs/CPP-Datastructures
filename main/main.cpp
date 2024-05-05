@@ -17,7 +17,7 @@ int main()
     SLinkedList<int> pp { 0, 1, 2, 3, 4, 5};
     std::cout << pp << std::endl;
     pp[3] = 7;
-    std::cout << pp.At(3) << std::endl;
+    std::cout << pp.at(3) << std::endl;
     std::cout << pp << std::endl;
     bool t = true;
     while(t)
@@ -30,11 +30,11 @@ int main()
         }
         else if(s == "w")
         {
-            l.Append(0);
+            l.append(0);
         }
         else if(s == "r")
         {
-			l.RemoveAt(0);
+			l.remove_at(0);
         }
         else if(s == "p")
 		{
@@ -42,11 +42,11 @@ int main()
 		}
         else if(s == "c")
         {
-            l.Clear();
+            l.clear();
         }
         else if(s == "s")
         {
-	        cout << l.Size() << endl;
+	        cout << l.size() << endl;
         }
     }
 }

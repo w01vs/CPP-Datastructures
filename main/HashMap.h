@@ -16,6 +16,7 @@ class HashMap
 	static_assert(std::is_copy_constructible_v<T>, "Attempted to make a HashMap with a type that does not implement a copy constructor");
 	static_assert(!std::is_pointer_v<T>, "Attempted to make a HashMap with a raw pointer type");
 	static_assert(is_equatable<T>::value, "Attempted to make a HashMap with a key type that does not have the '==' operator implemented");
+	static_assert(is_equatable<U>::value, "Attempted to make a HashMap with a value type that does not have the '==' operator implemented");
 	static_assert(has_std_hash<T>::value, "This key type does not have a specialized std::hash<T> implementation");
 
 	struct Entry
@@ -26,24 +27,24 @@ class HashMap
 		Entry* next;
 	};
 public:
-	HashMap() : capacity(0), load_factor(0), ptr(new Entry*[16])
+	HashMap() : capacity_(0), load_factor_(0), ptr_(new Entry*[16])
 	{
 		for(int i = 0; i < 16; i++)
-			ptr[i] = nullptr;
+			ptr_[i] = nullptr;
 	}
 
 	~HashMap()
 	{
-		delete ptr;
+		delete ptr_;
 	}
 
-	HashMap(const HashMap& other) : capacity(other.capacity), load_factor(other.load_factor)
+	HashMap(const HashMap& other) : capacity_(other.capacity_), load_factor_(other.load_factor_)
 	{
-		ptr = new Entry* [capacity];
-		for(int i = 0; i < capacity; i++)
+		ptr_ = new Entry* [capacity_];
+		for(int i = 0; i < capacity_; i++)
 		{
-			if(other.ptr[i] != nullptr)	ptr[i] = new Entry(*(other.ptr[i]));
-			else ptr[i] = nullptr;
+			if(other.ptr_[i] != nullptr)	ptr_[i] = new Entry(*(other.ptr_[i]));
+			else ptr_[i] = nullptr;
 		}
 	}
 
@@ -51,72 +52,75 @@ public:
 	{
 		if(this == &other) return *this;
 
-		Clear();
-		capacity = other.capacity;
-		load_factor = other.load_factor;
-		ptr = new Entry* [capacity];
-		for(int i = 0; i < capacity; i++)
+		clear();
+		capacity_ = other.capacity_;
+		load_factor_ = other.load_factor_;
+		ptr_ = new Entry* [capacity_];
+		for(int i = 0; i < capacity_; i++)
 		{
-			if(other.ptr[i] != nullptr)	ptr[i] = new Entry(*(other.ptr[i]));
-			else ptr[i] = nullptr;
+			if(other.ptr_[i] != nullptr)	ptr_[i] = new Entry(*(other.ptr_[i]));
+			else ptr_[i] = nullptr;
 		}
 
 		return *this;
 	}
 
-	HashMap(HashMap&& other) : capacity(other.capacity), load_factor(other.load_factor), ptr(other.ptr)
+	HashMap(HashMap&& other) : capacity_(other.capacity_), load_factor_(other.load_factor_), ptr_(other.ptr_)
 	{
-		other.capacity = 0;
-		other.load_factor = 0;
-		other.ptr = nullptr;
+		other.capacity_ = 0;
+		other.load_factor_ = 0;
+		other.ptr_ = nullptr;
 	}
 
 	HashMap& operator=(HashMap&& other)
 	{
 		if(this == &other) return *this;
 
-		Clear();
+		clear();
 
-		capacity = other.capacity;
-		load_factor = other.load_factor;
-		ptr = other.ptr;
+		capacity_ = other.capacity_;
+		load_factor_ = other.load_factor_;
+		ptr_ = other.ptr_;
 	}
 
 	U& operator[](const T& key)
 	{
-		const size_t hash = Hash(key);
-		const size_t index = hash % capacity;
-		if(ptr[index] == nullptr)
+		const size_t hash = hash(key);
+		const size_t index = hash % capacity_;
+		if(ptr_[index] == nullptr)
 		{
-			ptr[index] = new Entry{hash, U(), key};
-			return ptr[index]->value;
+			ptr_[index] = new Entry{hash, U(), key};
+			rehash();
+			return ptr_[index]->value;
 		}
 
-		Entry* ret = ptr[index];
+		Entry* ret = ptr_[index];
 		while(ret->hash != hash)
 			ret = ret->next;
 
 		return ret->value;
 	}
 
-	void Insert(T key, U value)
+	void insert(T key, U value)
 	{
-		const size_t hash = Hash(key);
-		const size_t index = hash % capacity;
+		const size_t hash = hash(key);
+		const size_t index = hash % capacity_;
 
-		Entry* entry = ptr[index];
+		Entry* entry = ptr_[index];
 		if(entry == nullptr)
-			ptr[index] = new Entry(hash, value, key, nullptr);
+			ptr_[index] = new Entry(hash, value, key, nullptr);
 		else
 			entry->next = new Entry(hash, value, key, nullptr);
+
+		rehash();
 	}
 
-	void Remove(const T& key)
+	void remove(const T& key)
 	{
-		const size_t hash = Hash(key);
-		const size_t index = hash % capacity;
+		const size_t hash = hash(key);
+		const size_t index = hash % capacity_;
 
-		Entry* entry = ptr[index];
+		Entry* entry = ptr_[index];
 		if(entry == nullptr)
 			return;
 		else
@@ -124,7 +128,7 @@ public:
 			if(entry.key == key)
 			{
 				const Entry* temp = entry;
-				ptr[index] = entry->next;
+				ptr_[index] = entry->next;
 				delete temp;
 				return;
 			}
@@ -140,41 +144,72 @@ public:
 			prev->next = entry->next;
 			delete entry;
 		}
+
+		rehash();
 	}
 
-	bool ContainsKey(const T& key);
-
-	bool ContainsValue(U value);
-
-	void Clear()
+	bool contains_key(const T& key)
 	{
-		for(int i = 0; i < capacity; i++)
+		const size_t hash = hash(key);
+		const size_t index = hash % capacity_;
+
+		Entry* entry = ptr_[index];
+
+		while(entry != nullptr)
 		{
-			delete ptr[i];
+			if(entry->key == key) return true;
+			entry = entry->next;
 		}
-		delete[] ptr;
-		capacity = 0;
-		load_factor = 0;
+
+		return false;
+	}
+
+	bool contains_value(U value)
+	{
+		if(load_factor_ <= 0) return false;
+
+		for(int i = 0; i < capacity_; i++)
+		{
+			Entry* entry = ptr_[i];
+			while(entry != nullptr)
+			{
+				if(entry->value == value) return true;
+				entry = entry->next;
+			}
+		}
+		
+		return false;
+	}
+
+	void clear()
+	{
+		for(int i = 0; i < capacity_; i++)
+		{
+			delete ptr_[i];
+		}
+		delete[] ptr_;
+		capacity_ = 0;
+		load_factor_ = 0;
 	}
 
 private:
-	size_t capacity;
-	float load_factor;
-	Entry** ptr;
+	size_t capacity_;
+	float load_factor_;
+	Entry** ptr_;
 
-	size_t Hash(const T& key)
+	size_t hash(const T& key)
 	{
 		std::hash<T> hash;
 		return hash(key);
 	}
 
-	void CalcLoadFac()
+	void calc_load_fac()
 	{
-		size_t nodes[capacity];
-		for(int i = 0; i < capacity; i++)
+		size_t nodes[capacity_];
+		for(int i = 0; i < capacity_; i++)
 		{
 			size_t count = 0;
-			Entry* start = ptr[i];
+			Entry* start = ptr_[i];
 			while(start->next != nullptr)
 			{
 				start = start->next;
@@ -185,15 +220,15 @@ private:
 		}
 
 		size_t res = 0;
-		for(int i = 0; i < capacity; i++)
+		for(int i = 0; i < capacity_; i++)
 		{
 			res = nodes[i] * nodes[i];
 		}
 
-		load_factor = (double)res / capacity;
+		load_factor_ = (double)res / capacity_;
 	}
 
-	void Rehash(); // Check if resize is needed and do so.
+	void rehash(); // Check if resize is needed and do so.
 };
 
 #endif // HASHSET_H

@@ -4,15 +4,15 @@
 int main()
 {
 	Stack<int> stack;
-	assert(stack.Empty());
-	stack.Push(5);
-	assert(!stack.Empty());
-	assert(stack.Size() == 1);
-	const int t = stack.Peek();
-	assert(stack.Size() == 1);
+	assert(stack.empty());
+	stack.push(5);
+	assert(!stack.empty());
+	assert(stack.size() == 1);
+	const int t = stack.peek();
+	assert(stack.size() == 1);
 	assert(t == 5);
-	const int p = stack.Pop();
-	assert(stack.Size() == 0);
+	const int p = stack.pop();
+	assert(stack.size() == 0);
 	assert(p == 5);
-	assert(stack.Empty());
+	assert(stack.empty());
 }

@@ -26,164 +26,164 @@ public:
 	class Iterator
 	{
 	public:
-		explicit Iterator(T* ptr) : ptr(ptr) {}
+		explicit Iterator(T* ptr) : ptr_(ptr) {}
 
 		T& operator*() const
 		{
-			return *ptr;
+			return *ptr_;
 		}
 
 		Iterator& operator++()
 		{
-			++ptr;
+			++ptr_;
 			return *this;
 		}
 
 		bool operator!=(const Iterator& other) const
 		{
-			return ptr != other.ptr;
+			return ptr_ != other.ptr_;
 		}
 
 		T* operator->() const
 		{
-			return ptr;
+			return ptr_;
 		}
 
 		Iterator& operator--()
 		{
-			--ptr;
+			--ptr_;
 			return *this;
 		}
 
 	private:
-		T* ptr;
+		T* ptr_;
 	};
 
 	Iterator begin() const
 	{
-		return Iterator(ptr);
+		return Iterator(ptr_);
 	}
 
 	Iterator end() const
 	{
-		return Iterator(ptr + elements);
+		return Iterator(ptr_ + elements_);
 	}
 
-	List() : count(MINIMUM_SIZE), elements(0)
+	List() : count_(MINIMUM_SIZE), elements_(0)
 	{
-		ptr = new T[MINIMUM_SIZE];
+		ptr_ = new T[MINIMUM_SIZE];
 		for(char i = 0; i < MINIMUM_SIZE; i++) 
-			ptr[i] = T();
+			ptr_[i] = T();
 	}
 
-	explicit List(const size_t size) : elements(size)
+	explicit List(const size_t size) : elements_(size)
 	{
-		const size_t temp = elements * STARTING_SIZE / 100;
-		count = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
-		ptr = new T[count];
-		for(size_t i = 0; i < count; i++) 
-			ptr[i] = T();
+		const size_t temp = elements_ * STARTING_SIZE / 100;
+		count_ = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
+		ptr_ = new T[count_];
+		for(size_t i = 0; i < count_; i++) 
+			ptr_[i] = T();
 	}
 
-	List(T data[], const size_t size) : elements(size)
+	List(T data[], const size_t size) : elements_(size)
 	{
-		const size_t temp = elements * STARTING_SIZE / 100;
-		count = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
-		ptr = new T[count];
+		const size_t temp = elements_ * STARTING_SIZE / 100;
+		count_ = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
+		ptr_ = new T[count_];
 		for(size_t i = 0; i < size; i++) 
-			ptr[i] = data[i];
-		for(size_t i = elements; i < count; i++) 
-			ptr[i] = T();
+			ptr_[i] = data[i];
+		for(size_t i = elements_; i < count_; i++) 
+			ptr_[i] = T();
 	}
 
 	template <size_t N>
-	explicit List(std::array<T, N> data) : elements(N)
+	explicit List(std::array<T, N> data) : elements_(N)
 	{
-		const size_t temp = elements * STARTING_SIZE / 100;
-		count = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
-		ptr = new T[count];
+		const size_t temp = elements_ * STARTING_SIZE / 100;
+		count_ = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
+		ptr_ = new T[count_];
 		const T* p = data.data();
 		for(int i = 0; i < N; i++)
-			ptr[i] = std::move(p[i]);
-		for(size_t i = elements; i < count; i++)
-			ptr[i] = T();
+			ptr_[i] = std::move(p[i]);
+		for(size_t i = elements_; i < count_; i++)
+			ptr_[i] = T();
 	}
 
-	explicit List(std::vector<T> data) : elements(data.size())
+	explicit List(std::vector<T> data) : elements_(data.size())
 	{
-		const size_t temp = elements * STARTING_SIZE / 100;
-		count = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
-		ptr = new T[count];
+		const size_t temp = elements_ * STARTING_SIZE / 100;
+		count_ = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
+		ptr_ = new T[count_];
 		const T* p = data.data();
-		for(size_t i = 0; i < elements; i++)
-			ptr[i] = std::move(p[i]);
-		for(size_t i = elements; i < count; i++)
-			ptr[i] = T();
+		for(size_t i = 0; i < elements_; i++)
+			ptr_[i] = std::move(p[i]);
+		for(size_t i = elements_; i < count_; i++)
+			ptr_[i] = T();
 	}
 
-	List(std::initializer_list<T> data) : elements(data.size())
+	List(std::initializer_list<T> data) : elements_(data.size())
 	{
-		const size_t temp = elements * STARTING_SIZE / 100;
-		count = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
-		ptr = new T[count];
+		const size_t temp = elements_ * STARTING_SIZE / 100;
+		count_ = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
+		ptr_ = new T[count_];
 		const T* p = data.begin();
-		for(size_t i = 0; i < elements; i++)
-			ptr[i] = p[i];
-		for(size_t i = elements; i < count; i++)
-			ptr[i] = T();
+		for(size_t i = 0; i < elements_; i++)
+			ptr_[i] = p[i];
+		for(size_t i = elements_; i < count_; i++)
+			ptr_[i] = T();
 	}
 
 	~List()
 	{
-		delete[] ptr;
-		ptr = nullptr;
+		delete[] ptr_;
+		ptr_ = nullptr;
 	}
 
-	List(const List& other) : count(other.count), elements(other.elements), ptr(nullptr)
+	List(const List& other) : count_(other.count_), elements_(other.elements_), ptr_(nullptr)
 	{
-		ptr = new T[count];
-		for(size_t i = 0; i < count; ++i)
-			ptr[i] = other.ptr[i];
+		ptr_ = new T[count_];
+		for(size_t i = 0; i < count_; ++i)
+			ptr_[i] = other.ptr_[i];
 	}
 
 	List& operator=(const List& other)
 	{
 		if(this == &other) return *this;
 
-		delete[] ptr;
+		delete[] ptr_;
 
-		elements = other.elements;
-		count = other.count;
-		ptr = new T[count];
-		for(size_t i = 0; i < count; ++i)
-			ptr[i] = other.ptr[i];
+		elements_ = other.elements_;
+		count_ = other.count_;
+		ptr_ = new T[count_];
+		for(size_t i = 0; i < count_; ++i)
+			ptr_[i] = other.ptr_[i];
 
 		return *this;
 	}
 
 	List(List&& other) noexcept
 	{
-		ptr = other.ptr;
-		count = other.count;
-		elements = other.elements;
-		other.ptr = nullptr;
-		other.count = 0;
-		other.elements = 0;
+		ptr_ = other.ptr_;
+		count_ = other.count_;
+		elements_ = other.elements_;
+		other.ptr_ = nullptr;
+		other.count_ = 0;
+		other.elements_ = 0;
 	} 
 
 	List& operator=(List&& other) noexcept
 	{
 		if(this == &other) return *this;
 
-		Clear();
+		clear();
 
-		ptr = other.ptr;
-		count = other.count;
-		elements = other.elements;
+		ptr_ = other.ptr_;
+		count_ = other.count_;
+		elements_ = other.elements_;
 
-		other.ptr = nullptr;
-		other.count = 0;
-		other.elements = 0;
+		other.ptr_ = nullptr;
+		other.count_ = 0;
+		other.elements_ = 0;
 
 		return *this;
 	}
@@ -191,11 +191,11 @@ public:
 	template <typename U = T, std::enable_if_t<is_printable<U>::value, int> = 0>
 	friend std::ostream& operator<<(std::ostream& os, const List& list)
 	{
-		if(list.Empty()) return os << "{ }" << std::endl;
+		if(list.empty()) return os << "{ }" << std::endl;
 		os << "{ ";
-		for(size_t i = 0; i < list.elements - 1; i++)
-			os << list.ptr[i] << ", ";
-		os << list.ptr[list.elements - 1] << " }" << std::endl;
+		for(size_t i = 0; i < list.elements_ - 1; i++)
+			os << list.ptr_[i] << ", ";
+		os << list.ptr_[list.elements_ - 1] << " }" << std::endl;
 		return os;
 	}
 
@@ -203,196 +203,196 @@ public:
 	bool operator==(const List& other) const
 	{
 		if(this == &other) return true;
-		if(elements != other.elements) return false;
+		if(elements_ != other.elements_) return false;
 
-		for(size_t i = 0; i < elements; i++)
-			if(ptr[i] != other.ptr[i]) return false;
+		for(size_t i = 0; i < elements_; i++)
+			if(ptr_[i] != other.ptr_[i]) return false;
 
 		return true;
 	}
 
 	T& operator[](size_t index)
 	{
-		if(index < elements) return ptr[index];
+		if(index < elements_) return ptr_[index];
 
-		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(elements));
+		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(elements_));
 	}
 
-	[[nodiscard]] T At(size_t index) const
+	[[nodiscard]] T at(size_t index) const
 	{
-		if(index < elements) return ptr[index];
+		if(index < elements_) return ptr_[index];
 
-		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(elements));
+		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(elements_));
 	}
 
-	void Append(const T& data) noexcept
+	void append(const T& data) noexcept
 	{
-		if(ptr == nullptr)
+		if(ptr_ == nullptr)
 		{
-			ptr = new T[MINIMUM_SIZE];
-			count = MINIMUM_SIZE;
-			for(char i = 0; i < count; i++)
-				ptr[i] = T();
+			ptr_ = new T[MINIMUM_SIZE];
+			count_ = MINIMUM_SIZE;
+			for(char i = 0; i < count_; i++)
+				ptr_[i] = T();
 		}
-		else if(elements * 100 >= UPSIZE_THRESHOLD * count)
+		else if(elements_ * 100 >= UPSIZE_THRESHOLD * count_)
 		{
-			const size_t temp = GROWTH_FACTOR * count / 100;
-			count = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
-			T* tempptr = new T[count];
-			for(size_t i = 0; i < elements; i++)
-				tempptr[i] = std::move(ptr[i]);
-			for(size_t i = elements; i < count; i++)
+			const size_t temp = GROWTH_FACTOR * count_ / 100;
+			count_ = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
+			T* tempptr = new T[count_];
+			for(size_t i = 0; i < elements_; i++)
+				tempptr[i] = std::move(ptr_[i]);
+			for(size_t i = elements_; i < count_; i++)
 				tempptr[i] = T();
-			delete[] ptr;
-			ptr = tempptr;
+			delete[] ptr_;
+			ptr_ = tempptr;
 		}
 
-		ptr[elements] = data;
-		elements++;
+		ptr_[elements_] = data;
+		elements_++;
 	}
 
-	void Append(T&& data) noexcept
+	void append(T&& data) noexcept
 	{
-		if(ptr == nullptr)
+		if(ptr_ == nullptr)
 		{
-			ptr = new T[MINIMUM_SIZE];
-			count = MINIMUM_SIZE;
-			for(char i = 0; i < count; i++)
-				ptr[i] = T();
+			ptr_ = new T[MINIMUM_SIZE];
+			count_ = MINIMUM_SIZE;
+			for(char i = 0; i < count_; i++)
+				ptr_[i] = T();
 		}
-		else if(elements * 100 >= UPSIZE_THRESHOLD * count)
+		else if(elements_ * 100 >= UPSIZE_THRESHOLD * count_)
 		{
-			const size_t temp = GROWTH_FACTOR * count / 100;
-			count = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
-			T* tempptr = new T[count];
-			for(size_t i = 0; i < elements; i++)
-				tempptr[i] = std::move(ptr[i]);
-			for(size_t i = elements; i < count; i++)
+			const size_t temp = GROWTH_FACTOR * count_ / 100;
+			count_ = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
+			T* tempptr = new T[count_];
+			for(size_t i = 0; i < elements_; i++)
+				tempptr[i] = std::move(ptr_[i]);
+			for(size_t i = elements_; i < count_; i++)
 				tempptr[i] = T();
-			delete[] ptr;
-			ptr = tempptr;
+			delete[] ptr_;
+			ptr_ = tempptr;
 		}
- 		ptr[elements] = std::move(data);
-		elements++;
+ 		ptr_[elements_] = std::move(data);
+		elements_++;
 	}
 
-	void InsertAt(const T& data, const size_t index)
+	void insert_at(const T& data, const size_t index)
 	{
-		if(index < elements)
+		if(index < elements_)
 		{
-			if(count > MINIMUM_SIZE && elements * 100 >= UPSIZE_THRESHOLD * count)
+			if(count_ > MINIMUM_SIZE && elements_ * 100 >= UPSIZE_THRESHOLD * count_)
 			{
-				count = GROWTH_FACTOR * count / 100;
-				T* temp = new T[count];
-				for(size_t i = 0; i < elements; i++)
-					temp[i] = std::move(ptr[i]);
-				for(size_t i = elements; i < count; i++)
+				count_ = GROWTH_FACTOR * count_ / 100;
+				T* temp = new T[count_];
+				for(size_t i = 0; i < elements_; i++)
+					temp[i] = std::move(ptr_[i]);
+				for(size_t i = elements_; i < count_; i++)
 					temp[i] = T();
-				delete[] ptr;
-				ptr = temp;
+				delete[] ptr_;
+				ptr_ = temp;
 			}
-			for(size_t i = elements; i > index; i--)
-				ptr[i] = std::move(ptr[i - 1]);
+			for(size_t i = elements_; i > index; i--)
+				ptr_[i] = std::move(ptr_[i - 1]);
 
 
-			ptr[index] = data;
-			elements++;
+			ptr_[index] = data;
+			elements_++;
 			return;
 		}
 
-		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(elements));
+		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(elements_));
 	}
 
-	void InsertAt(T&& data, const size_t index)
+	void insert_at(T&& data, const size_t index)
 	{
-		if(index < elements)
+		if(index < elements_)
 		{
-			if(count > MINIMUM_SIZE && elements * 100 >= UPSIZE_THRESHOLD * count)
+			if(count_ > MINIMUM_SIZE && elements_ * 100 >= UPSIZE_THRESHOLD * count_)
 			{
-				count = GROWTH_FACTOR * count / 100;
-				T* temp = new T[count];
-				for(size_t i = 0; i < elements; i++)
-					temp[i] = std::move(ptr[i]);
-				for(size_t i = elements; i < count; i++)
+				count_ = GROWTH_FACTOR * count_ / 100;
+				T* temp = new T[count_];
+				for(size_t i = 0; i < elements_; i++)
+					temp[i] = std::move(ptr_[i]);
+				for(size_t i = elements_; i < count_; i++)
 					temp[i] = T();
-				delete[] ptr;
-				ptr = temp;
+				delete[] ptr_;
+				ptr_ = temp;
 			}
-			for(size_t i = elements; i > index; i--)
-				ptr[i] = std::move(ptr[i - 1]);
+			for(size_t i = elements_; i > index; i--)
+				ptr_[i] = std::move(ptr_[i - 1]);
 
-			ptr[index] = std::move(data);
-			elements++;
+			ptr_[index] = std::move(data);
+			elements_++;
 			return;
 		}
 
-		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(elements));
+		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(elements_));
 	}
 
-	void RemoveAt(const size_t index)
+	void remove_at(const size_t index)
 	{
-		if(index < elements)
+		if(index < elements_)
 		{
-			if(count > MINIMUM_SIZE && elements * 100 <= DOWNSIZE_THRESHOLD * count)
+			if(count_ > MINIMUM_SIZE && elements_ * 100 <= DOWNSIZE_THRESHOLD * count_)
 			{
-				const size_t temp = count * SHRINK_FACTOR / 100;
-				count = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
-				T* tempptr = new T[count];
-				for(size_t i = 0; i < elements; i++)
-					tempptr[i] = std::move(ptr[i]);
-				for(size_t i = elements; i < count; i++)
+				const size_t temp = count_ * SHRINK_FACTOR / 100;
+				count_ = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
+				T* tempptr = new T[count_];
+				for(size_t i = 0; i < elements_; i++)
+					tempptr[i] = std::move(ptr_[i]);
+				for(size_t i = elements_; i < count_; i++)
 					tempptr[i] = T();
-				delete[] ptr;
-				ptr = tempptr;
+				delete[] ptr_;
+				ptr_ = tempptr;
 			}
-			for(size_t i = index; i < elements; i++)
-				ptr[i] = std::move(ptr[i + 1]);
-			elements--;
+			for(size_t i = index; i < elements_; i++)
+				ptr_[i] = std::move(ptr_[i + 1]);
+			elements_--;
 			return;
 		}
 
-		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(elements));
+		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(elements_));
 	}
 
-	void Clear() noexcept
+	void clear() noexcept
 	{
-		delete[] ptr;
-		ptr = nullptr;
-		count = 0;
-		elements = 0;
+		delete[] ptr_;
+		ptr_ = nullptr;
+		count_ = 0;
+		elements_ = 0;
 	}
 
-	void Resize(const size_t size, const bool allowSmaller = false)
+	void resize(const size_t size, const bool allowSmaller = false)
 	{
-		if(size == 0) throw std::invalid_argument("Size must be larger than 0");
-		if(size < elements && !allowSmaller) throw std::invalid_argument("New Size must be larger or equal than the amount of elements:" + std::to_string(elements));
+		if(size == 0) throw std::invalid_argument("size must be larger than 0");
+		if(size < elements_ && !allowSmaller) throw std::invalid_argument("New size must be larger or equal than the amount of elements_:" + std::to_string(elements_));
 		T* temp = new T[size];
-		elements = size < elements && allowSmaller ? size : elements;
-		for(size_t i = 0; i < elements; i++)
-			temp[i] = std::move(ptr[i]);
-		for(size_t i = elements; i < count; i++)
-			ptr[i] = T();
+		elements_ = size < elements_ && allowSmaller ? size : elements_;
+		for(size_t i = 0; i < elements_; i++)
+			temp[i] = std::move(ptr_[i]);
+		for(size_t i = elements_; i < count_; i++)
+			ptr_[i] = T();
 
-		delete[] ptr;
-		ptr = temp;
-		count = size;
-		elements = size;
+		delete[] ptr_;
+		ptr_ = temp;
+		count_ = size;
+		elements_ = size;
 	}
 
-	[[nodiscard]] bool Empty() const noexcept
+	[[nodiscard]] bool empty() const noexcept
 	{
-		return elements == 0;
+		return elements_ == 0;
 	}
 
-	[[nodiscard]] size_t Size() const noexcept
+	[[nodiscard]] size_t size() const noexcept
 	{
-		return elements;
+		return elements_;
 	}
 
 private:
-	size_t count;
-	size_t elements;
-	T* ptr;
+	size_t count_;
+	size_t elements_;
+	T* ptr_;
 };
 
 template <typename T>
@@ -405,168 +405,168 @@ public:
 	class Iterator
 	{
 	public:
-		explicit Iterator(T** ptr) : ptr(ptr) {}
+		explicit Iterator(T** ptr) : ptr_(ptr) {}
 
 		T& operator*() const
 		{
-			return **ptr;
+			return **ptr_;
 		}
 
 		Iterator& operator++()
 		{
-			++ptr;
+			++ptr_;
 			return *this;
 		}
 
 		bool operator!=(const Iterator& other) const
 		{
-			return ptr != other.ptr;
+			return ptr_ != other.ptr_;
 		}
 
 		T* operator->() const
 		{
-			return *ptr;
+			return *ptr_;
 		}
 
 		Iterator& operator--()
 		{
-			--ptr;
+			--ptr_;
 			return *this;
 		}
 
 	private:
-		T** ptr;
+		T** ptr_;
 	};
 
 	Iterator begin() const
 	{
-		return Iterator(ptr);
+		return Iterator(ptr_);
 	}
 
 	Iterator end() const
 	{
-		return Iterator(ptr + elements);
+		return Iterator(ptr_ + elements_);
 	}
 
-	List() : count(MINIMUM_SIZE), elements(0)
+	List() : count_(MINIMUM_SIZE), elements_(0)
 	{
-		ptr = new T*[count];
-		for(char i = 0; i < count; i++)
-			ptr[i] = nullptr;
+		ptr_ = new T*[count_];
+		for(char i = 0; i < count_; i++)
+			ptr_[i] = nullptr;
 	}
 
-	explicit List(const size_t size) : elements(size)
+	explicit List(const size_t size) : elements_(size)
 	{
-		const size_t temp = elements * STARTING_SIZE / 100;
-		count = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
-		ptr = new T*[count];
-		for(size_t i = 0; i < elements; i++)
-			ptr[i] = new T();
-		for(size_t i = elements; i < count; i++)
-			ptr[i] = nullptr;
+		const size_t temp = elements_ * STARTING_SIZE / 100;
+		count_ = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
+		ptr_ = new T*[count_];
+		for(size_t i = 0; i < elements_; i++)
+			ptr_[i] = new T();
+		for(size_t i = elements_; i < count_; i++)
+			ptr_[i] = nullptr;
 	}
 
-	List(T data[], const size_t size) : elements(size)
+	List(T data[], const size_t size) : elements_(size)
 	{
-		const size_t temp = elements * STARTING_SIZE / 100;
-		count = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
-		ptr = new T*[count];
+		const size_t temp = elements_ * STARTING_SIZE / 100;
+		count_ = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
+		ptr_ = new T*[count_];
 		for(size_t i = 0; i < size; i++)
-			ptr[i] = new T(data[i]);
-		for(size_t i = elements; i < count; i++)
-			ptr[i] = nullptr;
+			ptr_[i] = new T(data[i]);
+		for(size_t i = elements_; i < count_; i++)
+			ptr_[i] = nullptr;
 	}
 
 	template <size_t N>
-	explicit List(std::array<T, N> data) : elements(N)
+	explicit List(std::array<T, N> data) : elements_(N)
 	{
-		const size_t temp = elements * STARTING_SIZE / 100;
-		count = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
-		ptr = new T*[count];
+		const size_t temp = elements_ * STARTING_SIZE / 100;
+		count_ = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
+		ptr_ = new T*[count_];
 		const T* p = data.data();
 		for(int i = 0; i < N; i++)
-			ptr[i] = new T(std::move(p[i]));
-		for(size_t i = elements; i < count; i++)
-			ptr[i] = nullptr;
+			ptr_[i] = new T(std::move(p[i]));
+		for(size_t i = elements_; i < count_; i++)
+			ptr_[i] = nullptr;
 	}
 
-	explicit List(std::vector<T> data) : elements(data.size())
+	explicit List(std::vector<T> data) : elements_(data.size())
 	{
-		const size_t temp = elements * STARTING_SIZE / 100;
-		count = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
-		ptr = new T*[count];
+		const size_t temp = elements_ * STARTING_SIZE / 100;
+		count_ = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
+		ptr_ = new T*[count_];
 		T* p = data.data();
-		for(size_t i = 0; i < elements; i++)
-			ptr[i] = new T(std::move(p[i]));
-		for(size_t i = elements; i < count; i++)
-			ptr[i] = nullptr;
+		for(size_t i = 0; i < elements_; i++)
+			ptr_[i] = new T(std::move(p[i]));
+		for(size_t i = elements_; i < count_; i++)
+			ptr_[i] = nullptr;
 	}
 
-	List(std::initializer_list<T> data) : elements(data.size())
+	List(std::initializer_list<T> data) : elements_(data.size())
 	{
-		const size_t temp = elements * STARTING_SIZE / 100;
-		count = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
-		ptr = new T*[count];
+		const size_t temp = elements_ * STARTING_SIZE / 100;
+		count_ = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
+		ptr_ = new T*[count_];
 		const T* p = data.begin();
-		for(size_t i = 0; i < elements; i++)
-			ptr[i] = new T(p[i]);
-		for(size_t i = elements; i < count; i++)
-			ptr[i] = nullptr;
+		for(size_t i = 0; i < elements_; i++)
+			ptr_[i] = new T(p[i]);
+		for(size_t i = elements_; i < count_; i++)
+			ptr_[i] = nullptr;
 	}
 
 	~List()
 	{
-		for(size_t i = 0; i < elements; i++)
-			delete ptr[i];
-		delete[] ptr;
-		ptr = nullptr;
+		for(size_t i = 0; i < elements_; i++)
+			delete ptr_[i];
+		delete[] ptr_;
+		ptr_ = nullptr;
 	}
 
-	List(const List& other) : count(other.count), elements(other.elements)
+	List(const List& other) : count_(other.count_), elements_(other.elements_)
 	{
-		ptr = new T * [count];
-		for(size_t i = 0; i < elements; ++i)
-			ptr[i] = new T(*(other.ptr[i]));
+		ptr_ = new T * [count_];
+		for(size_t i = 0; i < elements_; ++i)
+			ptr_[i] = new T(*(other.ptr_[i]));
 	}
 
 	List& operator=(const List& other)
 	{
 		if(this == &other) return* this;
 
-		Clear();
+		clear();
 
-		elements = other.elements;
-		count = other.count;
-		ptr = new T*[count];
-		for(size_t i = 0; i < elements; ++i)
-			ptr[i] = new T(*(other.ptr[i]));
+		elements_ = other.elements_;
+		count_ = other.count_;
+		ptr_ = new T*[count_];
+		for(size_t i = 0; i < elements_; ++i)
+			ptr_[i] = new T(*(other.ptr_[i]));
 
 		return *this;
 	}
 
 	List(List&& other) noexcept
 	{
-		ptr = other.ptr;
-		count = other.count;
-		elements = other.elements;
-		other.ptr = nullptr;
-		other.count = 0;
-		other.elements = 0;
+		ptr_ = other.ptr_;
+		count_ = other.count_;
+		elements_ = other.elements_;
+		other.ptr_ = nullptr;
+		other.count_ = 0;
+		other.elements_ = 0;
 	}
 
 	List& operator=(List&& other) noexcept
 	{
 		if(this == &other) return *this;
 		
-		Clear();
+		clear();
 
-		ptr = other.ptr;
-		count = other.count;
-		elements = other.elements;
+		ptr_ = other.ptr_;
+		count_ = other.count_;
+		elements_ = other.elements_;
 
-		other.ptr = nullptr;
-		other.count = 0;
-		other.elements = 0;
+		other.ptr_ = nullptr;
+		other.count_ = 0;
+		other.elements_ = 0;
 		
 		return *this;
 	}
@@ -574,11 +574,11 @@ public:
 	template <typename U = T, std::enable_if_t<is_printable<U>::value, int> = 0>
 	friend std::ostream& operator<<(std::ostream& os, const List& list)
 	{
-		if(list.Empty()) return os << "{ }" << std::endl;
+		if(list.empty()) return os << "{ }" << std::endl;
 		os << "{ ";
-		for(size_t i = 0; i < list.elements - 1; i++)
-			os << *(list.ptr[i]) << ", ";
-		os << *(list.ptr[list.elements - 1]) << " }" << std::endl;
+		for(size_t i = 0; i < list.elements_ - 1; i++)
+			os << *(list.ptr_[i]) << ", ";
+		os << *(list.ptr_[list.elements_ - 1]) << " }" << std::endl;
 		return os;
 	}
 
@@ -586,205 +586,205 @@ public:
 	bool operator==(const List& other) const
 	{
 		if(this == &other) return true;
-		if(elements != other.elements) return false;
+		if(elements_ != other.elements_) return false;
 
-		for(size_t i = 0; i < elements; i++)
-			if(*ptr[i] != *(other.ptr[i])) return false;
+		for(size_t i = 0; i < elements_; i++)
+			if(*ptr_[i] != *(other.ptr_[i])) return false;
 
 		return true;
 	}
 
 	T& operator[](size_t index)
 	{
-		if(index < elements) return *ptr[index];
+		if(index < elements_) return *ptr_[index];
 
-		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(elements));
+		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(elements_));
 	}
 
-	[[nodiscard]] T At(size_t index) const
+	[[nodiscard]] T at(size_t index) const
 	{
-		if(index < elements) return *ptr[index];
+		if(index < elements_) return *ptr_[index];
 
-		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(elements));
+		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(elements_));
 	}
 
-	void Append(const T& data) noexcept
+	void append(const T& data) noexcept
 	{
-		if(ptr == nullptr)
+		if(ptr_ == nullptr)
 		{
-			ptr = new T*[MINIMUM_SIZE];
-			count = MINIMUM_SIZE;
+			ptr_ = new T*[MINIMUM_SIZE];
+			count_ = MINIMUM_SIZE;
 			for(char i = 0; i < MINIMUM_SIZE; i++)
-				ptr[i] = nullptr;
+				ptr_[i] = nullptr;
 		}
-		else if(elements * 100 >= UPSIZE_THRESHOLD * count)
+		else if(elements_ * 100 >= UPSIZE_THRESHOLD * count_)
 		{
-			const size_t temp = GROWTH_FACTOR * count / 100;
-			count = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
-			T** tempptr = new T*[count];
-			for(size_t i = 0; i < elements; i++)
-				tempptr[i] = ptr[i];
-			for(size_t i = elements; i < count; i++)
+			const size_t temp = GROWTH_FACTOR * count_ / 100;
+			count_ = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
+			T** tempptr = new T*[count_];
+			for(size_t i = 0; i < elements_; i++)
+				tempptr[i] = ptr_[i];
+			for(size_t i = elements_; i < count_; i++)
 				tempptr[i] = nullptr;
-			delete[] ptr;
-			ptr = tempptr;
+			delete[] ptr_;
+			ptr_ = tempptr;
 		}
 
-		ptr[elements] = new T(data);
-		elements++;
+		ptr_[elements_] = new T(data);
+		elements_++;
 	}
 
-	void Append(T&& data) noexcept
+	void append(T&& data) noexcept
 	{
-		if(ptr == nullptr)
+		if(ptr_ == nullptr)
 		{
-			ptr = new T * [MINIMUM_SIZE];
-			count = MINIMUM_SIZE;
+			ptr_ = new T * [MINIMUM_SIZE];
+			count_ = MINIMUM_SIZE;
 			for(char i = 0; i < MINIMUM_SIZE; i++)
-				ptr[i] = nullptr;
+				ptr_[i] = nullptr;
 		}
-		else if(elements * 100 >= UPSIZE_THRESHOLD * count)
+		else if(elements_ * 100 >= UPSIZE_THRESHOLD * count_)
 		{
-			const size_t temp = GROWTH_FACTOR * count / 100;
-			count = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
-			T** tempptr = new T * [count];
-			for(size_t i = 0; i < elements; i++)
-				tempptr[i] = ptr[i];
-			for(size_t i = elements; i < count; i++)
+			const size_t temp = GROWTH_FACTOR * count_ / 100;
+			count_ = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
+			T** tempptr = new T * [count_];
+			for(size_t i = 0; i < elements_; i++)
+				tempptr[i] = ptr_[i];
+			for(size_t i = elements_; i < count_; i++)
 				tempptr[i] = nullptr;
-			delete[] ptr;
-			ptr = tempptr;
+			delete[] ptr_;
+			ptr_ = tempptr;
 		}
 
-		ptr[elements] = new T(std::move(data));
-		elements++;
+		ptr_[elements_] = new T(std::move(data));
+		elements_++;
 	}
 
-	void InsertAt(const T& data, size_t index)
+	void insert_at(const T& data, size_t index)
 	{
-		if(index < elements || index == 0)
+		if(index < elements_ || index == 0)
 		{
-			if(count > MINIMUM_SIZE && elements * 100 >= UPSIZE_THRESHOLD * count)
+			if(count_ > MINIMUM_SIZE && elements_ * 100 >= UPSIZE_THRESHOLD * count_)
 			{
-				count = GROWTH_FACTOR * count / 100;
-				T** temp = new T*[count];
-				for(size_t i = 0; i < elements; i++)
-					temp[i] = ptr[i];
-				for(size_t i = elements; i < count; i++)
+				count_ = GROWTH_FACTOR * count_ / 100;
+				T** temp = new T*[count_];
+				for(size_t i = 0; i < elements_; i++)
+					temp[i] = ptr_[i];
+				for(size_t i = elements_; i < count_; i++)
 					temp[i] = nullptr;
-				delete[] ptr;
-				ptr = temp;
+				delete[] ptr_;
+				ptr_ = temp;
 			}
-			for(size_t i = elements; i > index; i--)
-				ptr[i] = ptr[i - 1];
+			for(size_t i = elements_; i > index; i--)
+				ptr_[i] = ptr_[i - 1];
 
-			ptr[index] = new T(data);
-			elements++;
+			ptr_[index] = new T(data);
+			elements_++;
 			return;
 		}
 
-		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(elements));
+		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(elements_));
 	}
 
-	void InsertAt(T&& data, size_t index)
+	void insert_at(T&& data, size_t index)
 	{
-		if(index < elements || index == 0)
+		if(index < elements_ || index == 0)
 		{
-			if(count > MINIMUM_SIZE && elements * 100 >= UPSIZE_THRESHOLD * count)
+			if(count_ > MINIMUM_SIZE && elements_ * 100 >= UPSIZE_THRESHOLD * count_)
 			{
-				count = GROWTH_FACTOR * count / 100;
-				T** temp = new T * [count];
-				for(size_t i = 0; i < elements; i++)
-					temp[i] = ptr[i];
-				for(size_t i = elements; i < count; i++)
+				count_ = GROWTH_FACTOR * count_ / 100;
+				T** temp = new T * [count_];
+				for(size_t i = 0; i < elements_; i++)
+					temp[i] = ptr_[i];
+				for(size_t i = elements_; i < count_; i++)
 					temp[i] = nullptr;
-				delete[] ptr;
-				ptr = temp;
+				delete[] ptr_;
+				ptr_ = temp;
 			}
-			for(size_t i = elements; i > index; i--)
-				ptr[i] = ptr[i - 1];
+			for(size_t i = elements_; i > index; i--)
+				ptr_[i] = ptr_[i - 1];
 
-			ptr[index] = new T(std::move(data));
-			elements++;
+			ptr_[index] = new T(std::move(data));
+			elements_++;
 			return;
 		}
 
-		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(elements));
+		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(elements_));
 	}
 
-	void RemoveAt(const size_t index)
+	void remove_at(const size_t index)
 	{
-		if(index < elements)
+		if(index < elements_)
 		{
-			if(count > MINIMUM_SIZE && elements * 100 <= DOWNSIZE_THRESHOLD * count)
+			if(count_ > MINIMUM_SIZE && elements_ * 100 <= DOWNSIZE_THRESHOLD * count_)
 			{
-				const size_t temp = count * SHRINK_FACTOR / 100;
-				count = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
-				T** tempptr = new T*[count];
-				for(size_t i = 0; i < elements; i++)
-					tempptr[i] = ptr[i];
-				for(size_t i = elements; i < count; i++)
+				const size_t temp = count_ * SHRINK_FACTOR / 100;
+				count_ = temp < MINIMUM_SIZE ? MINIMUM_SIZE : temp;
+				T** tempptr = new T*[count_];
+				for(size_t i = 0; i < elements_; i++)
+					tempptr[i] = ptr_[i];
+				for(size_t i = elements_; i < count_; i++)
 					tempptr[i] = nullptr;
-				delete[] ptr;
-				ptr = tempptr;
+				delete[] ptr_;
+				ptr_ = tempptr;
 			}
-			delete ptr[index];
-			for(size_t i = index; i < elements; i++)
-					ptr[i] = ptr[i + 1];
-			elements--;
+			delete ptr_[index];
+			for(size_t i = index; i < elements_; i++)
+					ptr_[i] = ptr_[i + 1];
+			elements_--;
 			return;
 		}
 
-		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(elements));
+		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(elements_));
 	}
 
-	void Clear() noexcept
+	void clear() noexcept
 	{
-		for(size_t i = 0; i < count; i++)
-			delete ptr[i];
-		delete[] ptr;
-		ptr = nullptr;
-		count = 0;
-		elements = 0;
+		for(size_t i = 0; i < count_; i++)
+			delete ptr_[i];
+		delete[] ptr_;
+		ptr_ = nullptr;
+		count_ = 0;
+		elements_ = 0;
 	}
 
-	void Resize(const size_t size, const bool allowSmaller = false)
+	void resize(const size_t size, const bool allowSmaller = false)
 	{
-		if(size == 0) throw std::invalid_argument("Size must be larger than 0");
-		if(size < elements && !allowSmaller) throw std::invalid_argument("New Size must be larger or equal than the amount of elements:" + std::to_string(elements));
+		if(size == 0) throw std::invalid_argument("size must be larger than 0");
+		if(size < elements_ && !allowSmaller) throw std::invalid_argument("New size must be larger or equal than the amount of elements_:" + std::to_string(elements_));
 		T** temp = new T*[size];
-		if(size < elements && allowSmaller)
+		if(size < elements_ && allowSmaller)
 		{
-			for(size_t i = 0; i < size; i++) temp[i] = std::move(ptr[i]);
-			for(size_t i = size; i < elements; i++)
+			for(size_t i = 0; i < size; i++) temp[i] = std::move(ptr_[i]);
+			for(size_t i = size; i < elements_; i++)
 			{
-				delete ptr[i];
-				ptr[i] = nullptr;
+				delete ptr_[i];
+				ptr_[i] = nullptr;
 			}
 		}
 		else
-			for(size_t i = 0; i < count; i++) temp[i] = std::move(ptr[i]);
+			for(size_t i = 0; i < count_; i++) temp[i] = std::move(ptr_[i]);
 
-		delete[] ptr;
-		ptr = temp;
-		count = size;
-		elements = size;
+		delete[] ptr_;
+		ptr_ = temp;
+		count_ = size;
+		elements_ = size;
 	}
 
-	[[nodiscard]] size_t Size() const noexcept
+	[[nodiscard]] size_t size() const noexcept
 	{
-		return elements;
+		return elements_;
 	}
 
-	[[nodiscard]] bool Empty() const noexcept
+	[[nodiscard]] bool empty() const noexcept
 	{
-		return elements == 0;
+		return elements_ == 0;
 	}
 
 
 private:
-	size_t count;
-	size_t elements;
-	T** ptr;
+	size_t count_;
+	size_t elements_;
+	T** ptr_;
 };
 #endif // LIST_H

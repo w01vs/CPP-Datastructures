@@ -13,42 +13,42 @@ class Queue
 	static_assert(std::is_copy_constructible_v<T>, "Attempted to make a Queue with a type that does not implement a copy constructor");
 	static_assert(!std::is_pointer_v<T>, "Attempted to make a Queue with a raw pointer type");
 public:
-	Queue() : list(DLinkedList<T>()) {}
+	Queue() : list_(DLinkedList<T>()) {}
 
-	explicit Queue(T data[], const size_t size) : list(DLinkedList<T>(data,size)) {}
+	explicit Queue(T data[], const size_t size) : list_(DLinkedList<T>(data,size)) {}
 
-	explicit Queue(std::vector<T> data) : list(DLinkedList<T>(data)) {}
+	explicit Queue(std::vector<T> data) : list_(DLinkedList<T>(data)) {}
 
 	template <size_t N>
-	explicit Queue(std::array<T, N> data) : list(DLinkedList<T>(data)) {}
+	explicit Queue(std::array<T, N> data) : list_(DLinkedList<T>(data)) {}
 
-	explicit Queue(std::initializer_list<T> data) : list(DLinkedList<T>(data)) {}
+	explicit Queue(std::initializer_list<T> data) : list_(DLinkedList<T>(data)) {}
 
 	~Queue() = default;
 
-	Queue(const Queue& other) : list(DLinkedList<T>(other.list)) {}
+	Queue(const Queue& other) : list_(DLinkedList<T>(other.list_)) {}
 
 	Queue& operator=(const Queue& other)
 	{
 		if(this == &other) return *this;
 
-		Clear();
-		list = other.list;
+		clear();
+		list_ = other.list_;
 
 		return *this;
 	}
 
 	Queue(Queue&& other) noexcept
 	{
-		list = other.list;
+		list_ = other.list_;
 	}
 
 	Queue& operator=(Queue&& other) noexcept
 	{
 		if(this == &other) return *this;
 
-		Clear();
-		list = other.list;
+		clear();
+		list_ = other.list_;
 
 		return *this;
 	}
@@ -56,7 +56,7 @@ public:
 	template <typename U = T, std::enable_if_t<is_printable<U>::value, int> = 0>
 	friend std::ostream& operator<<(std::ostream& os, const Queue& stack)
 	{
-		os << stack.list;
+		os << stack.list_;
 		return os;
 	}
 
@@ -64,48 +64,48 @@ public:
 	bool operator==(const Queue& other) const
 	{
 		if(this == &other) return true;
-		return list == other.list;
+		return list_ == other.list_;
 	}
 
-	T Pop()
+	T pop()
 	{
-		if(Empty())
+		if(empty())
 		{
 			throw std::out_of_range("Stack is empty");
 		}
-		return list.PopFront();
+		return list_.pop_front();
 	}
 
-	[[nodiscard]] T Peek() const
+	[[nodiscard]] T peek() const
 	{
-		if(Empty())
+		if(empty())
 		{
 			throw std::out_of_range("Stack is empty");
 		}
-		return list.Front();
+		return list_.front();
 	}
 
-	void Push(const T& data)
+	void push(const T& data)
 	{
-		list.Append(data);
+		list_.append(data);
 	}
-	void Clear()
+	void clear()
 	{
-		list.Clear();
-	}
-
-	[[nodiscard]] size_t Size() const
-	{
-		return list.Size();
+		list_.clear();
 	}
 
-	[[nodiscard]] bool Empty() const
+	[[nodiscard]] size_t size() const
 	{
-		return list.Empty();
+		return list_.size();
+	}
+
+	[[nodiscard]] bool empty() const
+	{
+		return list_.empty();
 	}
 
 private:
-	DLinkedList<T> list;
+	DLinkedList<T> list_;
 };
 
 #endif // QUEUE_h

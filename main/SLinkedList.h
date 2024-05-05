@@ -63,7 +63,7 @@ public:
 
 	Iterator begin() const
 	{
-		return Iterator(head);
+		return Iterator(head_);
 	}
 
 	Iterator end() const
@@ -71,63 +71,63 @@ public:
 		return Iterator(nullptr);
 	}
 
-	SLinkedList() : count(0), head(nullptr), tail(nullptr)  {}
+	SLinkedList() : count_(0), head_(nullptr), tail_(nullptr)  {}
 
-	SLinkedList(T data[], const size_t size) : count(size)
+	SLinkedList(T data[], const size_t size) : count_(size)
 	{
-		head = new Node<T>(data[0]);
-		Node<T>* current = head;
-		for(size_t i = 1; i < count; i++)
+		head_ = new Node<T>(data[0]);
+		Node<T>* current = head_;
+		for(size_t i = 1; i < count_; i++)
 		{
 			current->next = new Node<T>(data[i]);
 			current = current->next;
 		}
-		tail = current;
+		tail_ = current;
 	}
 
-	explicit SLinkedList(std::vector<T> data) : count(data.Size())
+	explicit SLinkedList(std::vector<T> data) : count_(data.size())
 	{
 		const T* p = data.begin();
-		head = new Node<T>(p[0]);
-		Node<T>* current = head;
-		for(size_t i = 1; i < count; i++)
+		head_ = new Node<T>(p[0]);
+		Node<T>* current = head_;
+		for(size_t i = 1; i < count_; i++)
 		{
 			current->next = new Node<T>(std::move(p[i]));
 			current = current->next;
 		}
-		tail = current;
+		tail_ = current;
 	}
 
 	template <size_t N>
-	explicit SLinkedList(std::array<T, N> data) : count(N)
+	explicit SLinkedList(std::array<T, N> data) : count_(N)
 	{
 		const T* p = data.begin();
-		head = new Node<T>(p[0]);
-		Node<T>* current = head;
+		head_ = new Node<T>(p[0]);
+		Node<T>* current = head_;
 		for(size_t i = 1; i < N; ++i)
 		{
 			current->next = new Node<T>(std::move(p[0]));
 			current = current->next;
 		}
-		tail = current;
+		tail_ = current;
 	}
 
-	SLinkedList(std::initializer_list<T> data) : count(data.size())
+	SLinkedList(std::initializer_list<T> data) : count_(data.size())
 	{
 		const T* p = data.begin();
-		head = new Node<T>(p[0]);
-		Node<T>* current = head;
-		for(size_t i = 1; i < count; ++i)
+		head_ = new Node<T>(p[0]);
+		Node<T>* current = head_;
+		for(size_t i = 1; i < count_; ++i)
 		{
 			current->next = new Node<T>(p[i]);
 			current = current->next;
 		}
-		tail = current;
+		tail_ = current;
 	}
 
 	~SLinkedList()
 	{
-		Node<T>* current = head;
+		Node<T>* current = head_;
 		while(current != nullptr)
 		{
 			Node<T>* next = current->next;
@@ -136,12 +136,12 @@ public:
 		}
 	}
 
-	SLinkedList(const SLinkedList& other) : count(0), head(nullptr), tail(nullptr)
+	SLinkedList(const SLinkedList& other) : count_(0), head_(nullptr), tail_(nullptr)
 	{
-		Node<T>* currentOther = new Node<T>(*(other.head->data));
+		Node<T>* currentOther = new Node<T>(*(other.head_->data));
 		while(currentOther != nullptr)
 		{
-			Append(*(currentOther->data));
+			append(*(currentOther->data));
 			currentOther = currentOther->next;
 		}
 	}
@@ -150,11 +150,11 @@ public:
 	{
 		if(this == &other) return *this;
 
-		Clear();
-		Node<T>* current = new Node<T>(*(other.head->data));
+		clear();
+		Node<T>* current = new Node<T>(*(other.head_->data));
 		while(current != nullptr)
 		{
-			Append(*(current->data));
+			append(*(current->data));
 			current = current->next;
 		}
 
@@ -163,25 +163,25 @@ public:
 
 	SLinkedList(SLinkedList&& other) noexcept
 	{
-		head = other.head;
-		tail = other.tail;
-		count = other.count;
-		other.head = nullptr;
-		other.tail = nullptr;
-		other.count = 0;
+		head_ = other.head_;
+		tail_ = other.tail_;
+		count_ = other.count_;
+		other.head_ = nullptr;
+		other.tail_ = nullptr;
+		other.count_ = 0;
 	}
 
 	SLinkedList& operator=(SLinkedList&& other) noexcept
 	{
 		if(this == &other) return *this;
 		
-		Clear();
-		head = other.head;
-		tail = other.tail;
-		count = other.count;
-		other.head = nullptr;
-		other.tail = nullptr;
-		other.count = 0;
+		clear();
+		head_ = other.head_;
+		tail_ = other.tail_;
+		count_ = other.count_;
+		other.head_ = nullptr;
+		other.tail_ = nullptr;
+		other.count_ = 0;
 
 		return *this;
 	}
@@ -189,15 +189,15 @@ public:
 	template <typename U = T, std::enable_if_t<is_printable<U>::value, int> = 0>
 	friend std::ostream& operator<<(std::ostream& os, const SLinkedList& list)
 	{
-		if(list.head == nullptr) return os << "{ }" << std::endl;
+		if(list.head_ == nullptr) return os << "{ }" << std::endl;
 		os << "{ ";
-		Node<T>* current = list.head;
-		while(current != list.tail)
+		Node<T>* current = list.head_;
+		while(current != list.tail_)
 		{
 			os << *(current->data) << ", ";
 			current = current->next;
 		}
-		os << *(list.tail->data) << " }" << std::endl;
+		os << *(list.tail_->data) << " }" << std::endl;
 		return os;
 	}
 
@@ -205,9 +205,9 @@ public:
 	bool operator==(const SLinkedList& other) const
 	{
 		if(this == &other) return true;
-		if(count != other.count) return false;
-		Node<T>* current = head;
-		Node<T>* currentOther = other.head;
+		if(count_ != other.count_) return false;
+		Node<T>* current = head_;
+		Node<T>* currentOther = other.head_;
 		while(current != nullptr)
 		{
 			if(*(current->data) != *(currentOther->data)) return false;
@@ -220,259 +220,259 @@ public:
 
 	T& operator[](const size_t index)
 	{
-		if(index < count)
+		if(index < count_)
 		{
-			return *(UnsafeGetPointerAt(index)->data);
+			return *(unsafe_get_pointer_at(index)->data);
 		}
 
-		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(count));
+		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(count_));
 	}
 
-	[[nodiscard]] T At(const size_t index) const
+	[[nodiscard]] T at(const size_t index) const
 	{
-		if(index < count)
+		if(index < count_)
 		{
-			return *(UnsafeGetPointerAt(index)->data);
+			return *(unsafe_get_pointer_at(index)->data);
 		}
 
-		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(count));
+		throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(count_));
 	}
 
-	void Append(const T& data) noexcept
+	void append(const T& data) noexcept
 	{
 		Node<T>* newNode = new Node<T>(data);
-		if(head == nullptr)
+		if(head_ == nullptr)
 		{
-			head = newNode;
-			tail = newNode;
+			head_ = newNode;
+			tail_ = newNode;
 		}
 		else
 		{
-			tail->next = newNode;
-			tail = newNode;
+			tail_->next = newNode;
+			tail_ = newNode;
 		}
-		count++;
+		count_++;
 	}
 
-	void Append(T&& data) noexcept
+	void append(T&& data) noexcept
 	{
 		Node<T>* newNode = new Node<T>(std::move(data));;
-		if(head == nullptr)
+		if(head_ == nullptr)
 		{
-			head = newNode;
-			tail = newNode;
+			head_ = newNode;
+			tail_ = newNode;
 		}
 		else
 		{
-			tail->next = newNode;
-			tail = newNode;
+			tail_->next = newNode;
+			tail_ = newNode;
 		}
-		count++;
+		count_++;
 	}
 
-	void Prepend(const T& data) noexcept
+	void prepend(const T& data) noexcept
 	{
 		Node<T>* newNode = new Node<T>(data);
-		if(head == nullptr)
+		if(head_ == nullptr)
 		{
-			head = newNode;
-			tail = newNode;
+			head_ = newNode;
+			tail_ = newNode;
 		}
 		else
-		{	newNode->next = head;
-			head = newNode;
+		{	newNode->next = head_;
+			head_ = newNode;
 		}
-		count++;
+		count_++;
 	}
 
-	void Prepend(T&& data) noexcept
+	void prepend(T&& data) noexcept
 	{
 		Node<T>* newNode = new Node<T>(std::move(data));
-		if(head == nullptr)
+		if(head_ == nullptr)
 		{
-			head = newNode;
-			tail = newNode;
+			head_ = newNode;
+			tail_ = newNode;
 		}
 		else
 		{
-			newNode->next = head;
-			head = newNode;
+			newNode->next = head_;
+			head_ = newNode;
 		}
-		count++;
+		count_++;
 	}
 
-	[[nodiscard]] T Front() const
+	[[nodiscard]] T front() const
 	{
-		if(head != nullptr) return *(head->data);
-		throw std::out_of_range("List is Empty");
+		if(head_ != nullptr) return *(head_->data);
+		throw std::out_of_range("List is empty");
 	}
 
-	T PopFront()
+	T pop_front()
 	{
-		if(head != nullptr)
+		if(head_ != nullptr)
 		{
-			const Node<T>* temp = head;
-			T res = *(head->data);
-			if(head == tail)
+			const Node<T>* temp = head_;
+			T res = *(head_->data);
+			if(head_ == tail_)
 			{
-				head = nullptr;
-				tail = nullptr;
+				head_ = nullptr;
+				tail_ = nullptr;
 			}
 			else
-				head = head->next;
+				head_ = head_->next;
 			delete temp;
-			count--;
+			count_--;
 			return res;
 		}
 
-		throw std::out_of_range("List is Empty");
+		throw std::out_of_range("List is empty");
 	}
 
-	[[nodiscard]] T Back() const
+	[[nodiscard]] T back() const
 	{
-		if(tail != nullptr) return *(tail->data);
-		throw std::out_of_range("List is Empty");
+		if(tail_ != nullptr) return *(tail_->data);
+		throw std::out_of_range("List is empty");
 	}
 
-	T PopBack()
+	T pop_back()
 	{
-		if(tail != nullptr)
+		if(tail_ != nullptr)
 		{
-			const Node<T>* temp = tail;
-			T res = *(tail->data);
-			if(head == tail)
+			const Node<T>* temp = tail_;
+			T res = *(tail_->data);
+			if(head_ == tail_)
 			{
-				head = nullptr;
-				tail = nullptr;
+				head_ = nullptr;
+				tail_ = nullptr;
 			}
 			else
 			{
-				tail = UnsafeGetPointerAt(count - 2);
-				tail->next = nullptr;
+				tail_ = unsafe_get_pointer_at(count_ - 2);
+				tail_->next = nullptr;
 			}
 				
 			delete temp;
-			count--;
+			count_--;
 			return res;
 		}
 
-		throw std::out_of_range("List is Empty");
+		throw std::out_of_range("List is empty");
 	}
 
-	void InsertAt(const T& data, const size_t index)
+	void insert_at(const T& data, const size_t index)
 	{
-		if(index < count)
+		if(index < count_)
 		{
 			Node<T>* newNode = new Node<T>(data);
 			if(index == 0)
 			{
-				newNode->next = head;
-				head = newNode;
+				newNode->next = head_;
+				head_ = newNode;
 			}
 			else
 			{
-				Node<T>* temp = UnsafeGetPointerAt(index - 1);
+				Node<T>* temp = unsafe_get_pointer_at(index - 1);
 				newNode->next = temp->next;
 				temp->next = newNode;
 			}
-			count++;
+			count_++;
 		}
 		else
-			throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(count));
+			throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(count_));
 	}
 
-	void InsertAt(T&& data, const size_t index)
+	void insert_at(T&& data, const size_t index)
 	{
-		if(index < count)
+		if(index < count_)
 		{
 			Node<T>* newNode = new Node<T>(std::move(data));
 			if(index == 0)
 			{
-				newNode->next = head;
-				head = newNode;
+				newNode->next = head_;
+				head_ = newNode;
 			}
 			else
 			{
-				Node<T>* temp = UnsafeGetPointerAt(index - 1);
+				Node<T>* temp = unsafe_get_pointer_at(index - 1);
 				newNode->next = temp->next;
 				temp->next = newNode;
 			}
-			count++;
+			count_++;
 		}
 		else
-			throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(count));
+			throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(count_));
 	}
 
-	void RemoveAt(const size_t index)
+	void remove_at(const size_t index)
 	{
-		if(index < count)
+		if(index < count_)
 		{
 			if(index == 0)
 			{
-				if(head == tail)
+				if(head_ == tail_)
 				{
-					delete head;
-					head = nullptr;
-					tail = nullptr;
+					delete head_;
+					head_ = nullptr;
+					tail_ = nullptr;
 				}
 				else
 				{
-					const Node<T>* temp = head;
-					head = head->next;
+					const Node<T>* temp = head_;
+					head_ = head_->next;
 					delete temp;
 				}
 			}
-			else if(index == count - 1)
+			else if(index == count_ - 1)
 			{
-				delete tail;
-				tail = UnsafeGetPointerAt(index - 1);
-				tail->next = nullptr;
+				delete tail_;
+				tail_ = unsafe_get_pointer_at(index - 1);
+				tail_->next = nullptr;
 			}
 			else
 			{
-				Node<T>* temp = UnsafeGetPointerAt(index - 1);
+				Node<T>* temp = unsafe_get_pointer_at(index - 1);
 				const Node<T>* remove = temp->next;
 				temp->next = remove->next;
 				delete remove;
 			}
-			count--;
+			count_--;
 		}
 		else
-			throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(count));
+			throw std::out_of_range("Index out of bounds\nindex: " + std::to_string(index) + "\nsize: " + std::to_string(count_));
 	}
 
-	void Clear() noexcept
+	void clear() noexcept
 	{
-		Node<T>* current = head;
+		Node<T>* current = head_;
 		while(current != nullptr)
 		{
 			Node<T>* next = current->next;
 			delete current;
 			current = next;
 		}
-		head = nullptr;
-		tail = nullptr;
-		count = 0;
+		head_ = nullptr;
+		tail_ = nullptr;
+		count_ = 0;
 	}
 
-	[[nodiscard]] size_t Size() const noexcept
+	[[nodiscard]] size_t size() const noexcept
 	{
-		return count;
+		return count_;
 	}
 
-	[[nodiscard]] bool Empty() const noexcept
+	[[nodiscard]] bool empty() const noexcept
 	{
-		return count == 0;
+		return count_ == 0;
 	}
 
 private:
-	size_t count;
-	Node<T>* head;
-	Node<T>* tail;
+	size_t count_;
+	Node<T>* head_;
+	Node<T>* tail_;
 
-	[[nodiscard]] Node<T>* UnsafeGetPointerAt(const size_t index) const
+	[[nodiscard]] Node<T>* unsafe_get_pointer_at(const size_t index) const
 	{
-		Node<T>* res = head;
+		Node<T>* res = head_;
 		size_t pos = 0;
 		while(pos != index)
 		{

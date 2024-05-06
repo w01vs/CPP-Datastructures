@@ -364,7 +364,7 @@ public:
 
 	void resize(const size_t size, const bool allowSmaller = false)
 	{
-		if(size == 0) throw std::invalid_argument("size must be larger than 0");
+		if(size == 0) throw std::invalid_argument("Size must be larger than 0");
 		if(size < elements_ && !allowSmaller) throw std::invalid_argument("New size must be larger or equal than the amount of elements_:" + std::to_string(elements_));
 		T* temp = new T[size];
 		elements_ = size < elements_ && allowSmaller ? size : elements_;

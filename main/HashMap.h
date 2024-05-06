@@ -28,7 +28,7 @@ class HashMap
 		Entry* next;
 	};
 public:
-	HashMap() : capacity_(0), load_factor_(0), ptr_(new Entry*[16])
+	HashMap() : capacity_(0), load_factor_(0), ptr_(new Entry*[16]), count_(0)
 	{
 		for(int i = 0; i < 16; i++)
 			ptr_[i] = nullptr;
@@ -229,7 +229,7 @@ private:
 
 	void calc_load_fac()
 	{
-		size_t nodes[capacity_];
+		size_t nodes[capacity_] = { };
 		for(int i = 0; i < capacity_; i++)
 		{
 			size_t count = 0;

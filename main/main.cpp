@@ -6,6 +6,7 @@
 #include "DLinkedList.h"
 #include "Queue.h"
 #include "HashMap.h"
+#include "Tree.h"
 
 
 
@@ -13,13 +14,11 @@ int main()
 {
     using namespace std;
     const List l1 { 1, 2, 3 };
-    List<int> l { 1,2,3 };
-    SLinkedList<int> pp { 0, 1, 2, 3, 4, 5};
-    std::cout << pp << std::endl;
-    pp[3] = 7;
-    std::cout << pp.at(3) << std::endl;
-    std::cout << pp << std::endl;
+    List l { 1,2,3 };
+    HashMap<std::string, int> map;
     bool t = true;
+
+
     while(t)
     {
         string s;
